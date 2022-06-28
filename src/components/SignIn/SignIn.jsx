@@ -1,9 +1,52 @@
 import TextField from "@mui/material/TextField";
-import { Button } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { useState } from "react";
 import styles from "./SignIn.module.css";
+import { useNavigate, Link } from "react-router-dom";
+import Image from "../../personalinfo.svg";
 
-const SignIn = ({ changeView, saveUserDetails }) => {
+const CssTextField = styled(TextField)({
+  "& fieldset": {
+    borderWidth: "2px",
+  },
+  "& label.Mui-focused": {
+    color: "white",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "white",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "white",
+    },
+    "&:hover fieldset": {
+      borderColor: "#b6b2ff",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#03003e",
+    },
+  },
+});
+
+const CssButton = styled(Button)({
+  "&.MuiButton-root": {
+    background: "#b6b2ff",
+    color: "#03003e",
+    "&.MuiButton-root:hover": {
+      background: "#03003e",
+      color: "#b6b2ff",
+    },
+  },
+});
+
+const SignIn = ({
+  isAuthenticated,
+  setIsAuthenticated,
+  user,
+  setUser,
+  setUserToken,
+}) => {
+  const navigate = useNavigate();
   const [signInDetails, setSignInDetails] = useState({
     email: "",
     password: "",
@@ -54,8 +97,10 @@ const SignIn = ({ changeView, saveUserDetails }) => {
         if (response.status === 200) {
           const data = await response.json();
           console.log(data);
-          saveUserDetails(data);
-          changeView("home");
+          setUser(data.user);
+          setUserToken(data.jwtToken);
+          setIsAuthenticated(true);
+          navigate("/");
         } else {
           resetForm();
           alert("Invalid Credentials");
@@ -65,34 +110,50 @@ const SignIn = ({ changeView, saveUserDetails }) => {
       .catch((e) => console.log(e));
   };
   return (
-    <div className={styles.signin}>
-      <h2 className={styles.title}>Sign In</h2>
-      <form className={styles.bg}>
-        <TextField
-          required
-          type="email"
-          id="outlined-email"
-          label="Email"
-          variant="outlined"
-          onChange={setEmail}
-          value={signInDetails.email}
-        />
-        <TextField
-          required
-          type="password"
-          id="outlined-password"
-          label="Password"
-          variant="outlined"
-          onChange={setPassword}
-          value={signInDetails.password}
-        />
-        <Button variant="contained" onClick={signInPortal}>
-          Sign In
+    <section className={styles.signinPage}>
+      <aside>
+        <img src={Image} alt="side-image" />
+      </aside>
+      <div className={styles.signin}>
+        <h2 className={styles.title}>Sign In</h2>
+        <form className={styles.bg}>
+          <CssTextField
+            required
+            type="email"
+            id="outlined-email"
+            label="Email"
+            variant="outlined"
+            onChange={setEmail}
+            value={signInDetails.email}
+          />
+          <CssTextField
+            required
+            type="password"
+            id="outlined-password"
+            label="Password"
+            variant="outlined"
+            onChange={setPassword}
+            value={signInDetails.password}
+          />
+          <CssButton variant="contained" onClick={signInPortal}>
+            Sign In
+          </CssButton>
+        </form>
+        <p>or</p>
+        {/* <Button onClick={() => changeView("register")}>Register</Button> */}
+        <Button>
+          <Link
+            to={"/register"}
+            style={{
+              textDecoration: "none",
+              padding: "0.5rem",
+            }}
+          >
+            Register
+          </Link>
         </Button>
-      </form>
-      <p>or</p>
-      <Button onClick={() => changeView("register")}>Register</Button>
-    </div>
+      </div>
+    </section>
   );
 };
 

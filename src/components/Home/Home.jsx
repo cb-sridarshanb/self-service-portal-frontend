@@ -5,14 +5,71 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Container } from "@mui/material";
+Table;
+import {
+  Container,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableContainer,
+  Paper,
+  Card,
+} from "@mui/material";
 import { useState } from "react";
 import styles from "./Home.module.css";
+import { useNavigate } from "react-router-dom";
 
-export default function Home({ userDetails, changeView }) {
+const CssButton = styled(Button)({
+  "&.MuiButton-root": {
+    background: "#b6b2ff",
+    border: "2px solid #03003e",
+    color: "#03003e",
+    "&.MuiButton-root:hover": {
+      background: "#03003e",
+      color: "#b6b2ff",
+    },
+  },
+});
+
+const CustomContainer = styled(Container)({
+  "&": {
+    background: "#8E2DE2" /* fallback for old browsers */,
+    background:
+      "-webkit-linear-gradient(to right, #4A00E0, #8E2DE2)" /* Chrome 10-25, Safari 5.1-6 */,
+    background:
+      "linear-gradient(to right, #4A00E0, #8E2DE2)" /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */,
+    maxWidth: "100%",
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+const CustomDialog = styled(Dialog)({
+  "& .MuiDialog-container": {
+    // display: "block",
+    background: "red",
+  },
+});
+
+export default function Home({
+  user,
+  setUser,
+  isAuthenticated,
+  setIsAuthenticated,
+  userToken,
+}) {
+  console.log(user);
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
-  const [userInfo, setUserInfo] = useState(userDetails);
+  const [userInfo, setUserInfo] = useState(user);
+  const [viewDetails, setViewDetails] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,6 +85,14 @@ export default function Home({ userDetails, changeView }) {
 
   const closeDeleteModal = () => {
     setDeleteModal(false);
+  };
+
+  const openViewDetailsModal = () => {
+    setViewDetails(true);
+  };
+
+  const closeViewDetailsModal = () => {
+    setViewDetails(false);
   };
 
   const setFirstName = (e) => {
@@ -75,6 +140,7 @@ export default function Home({ userDetails, changeView }) {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        Authorization: "Bearer " + userToken,
       },
       body: JSON.stringify(userInfo),
     })
@@ -94,34 +160,110 @@ export default function Home({ userDetails, changeView }) {
   const deleteAccount = () => {
     fetch(`http://localhost:8080/portal/remove-user/${userInfo.email}`, {
       method: "delete",
+      headers: {
+        Authorization: "Bearer " + userToken,
+      },
     })
       .then((response) => response.text())
       .then((data) => {
         console.log(data);
         alert(data);
         closeDeleteModal();
-        changeView("signin");
+        setIsAuthenticated(false);
+        setUser(null);
+        navigate("/");
       })
       .catch((e) => console.log(e));
   };
 
   const logout = () => {
-    changeView("signin");
+    setIsAuthenticated(false);
+    navigate("/");
+    setUser(null);
   };
 
   return (
     <>
-      <Container>
+      <CustomContainer>
         <h2 className={styles.title}>
           Hi {userInfo.firstName + " " + userInfo.lastName}
         </h2>
-        <p className={styles.listTitle}>User details</p>
         <div>
           <div className={styles.buttonGroup}>
             <div>
-              <Button variant="outlined" onClick={handleClickOpen}>
+              <CssButton variant="outlined" onClick={openViewDetailsModal}>
+                View Details
+              </CssButton>
+              <Dialog
+                fullWidth
+                open={viewDetails}
+                // TransitionComponent={Transition}
+                // keepMounted
+                onClose={closeViewDetailsModal}
+                // aria-describedby="alert-dialog-slide-description"
+              >
+                <DialogTitle>{"User Details"}</DialogTitle>
+                <DialogContent>
+                  <TableContainer component={Card}>
+                    <Table
+                      style={{ minWidth: "100%" }}
+                      aria-label="simple table"
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ fontWeight: "700" }}>
+                            Information
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "700" }}
+                            align="right"
+                          >
+                            Entry
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {Object.entries(userInfo).map((user) => {
+                          if (user[0] !== "password") {
+                            return (
+                              <TableRow
+                                key={user[0]}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell
+                                  style={{ textTransform: "capitalize" }}
+                                  component="th"
+                                  scope="row"
+                                >
+                                  {user[0]}
+                                </TableCell>
+                                <TableCell
+                                  style={{ fontWeight: "700" }}
+                                  align="right"
+                                >
+                                  {user[1]}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={closeViewDetailsModal}>Close</Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+            <div>
+              <CssButton variant="outlined" onClick={handleClickOpen}>
                 Edit Details
-              </Button>
+              </CssButton>
               <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Edit details</DialogTitle>
                 <DialogContent>
@@ -214,15 +356,15 @@ export default function Home({ userDetails, changeView }) {
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose}>Cancel</Button>
-                  <Button onClick={submitDetails}>Confirm Edit</Button>
+                  <CssButton onClick={submitDetails}>Confirm Edit</CssButton>
                 </DialogActions>
               </Dialog>
             </div>
 
             <div>
-              <Button variant="outlined" onClick={openDeleteModal}>
+              <CssButton variant="outlined" onClick={openDeleteModal}>
                 Delete Account
-              </Button>
+              </CssButton>
               <Dialog open={deleteModal} onClick={closeDeleteModal}>
                 <DialogTitle>Delete Account</DialogTitle>
                 <DialogContent>
@@ -234,31 +376,19 @@ export default function Home({ userDetails, changeView }) {
                   <Button autoFocus onClick={closeDeleteModal}>
                     No
                   </Button>
-                  <Button onClick={deleteAccount}>Yes</Button>
+                  <CssButton onClick={deleteAccount}>Yes</CssButton>
                 </DialogActions>
               </Dialog>
             </div>
 
             <div>
-              <Button variant="outlined" onClick={logout}>
+              <CssButton variant="outlined" onClick={logout}>
                 Log out
-              </Button>
+              </CssButton>
             </div>
           </div>
         </div>
-        <ul className={styles.detailsList}>
-          {Object.entries(userInfo).map((user) => {
-            if (user[0] !== "password") {
-              return (
-                <li key={user[0]}>
-                  <p>{user[0]}:</p>
-                  <p>{user[1]}</p>
-                </li>
-              );
-            }
-          })}
-        </ul>
-      </Container>
+      </CustomContainer>
     </>
   );
 }

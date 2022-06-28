@@ -1,9 +1,50 @@
 import TextField from "@mui/material/TextField";
-import { Button } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { useState } from "react";
 import styles from "./Register.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import Image from "../../personalinfo.svg";
 
-const Register = ({ changeView, saveUserDetails }) => {
+const CssTextField = styled(TextField)({
+  "& fieldset": {
+    borderWidth: "2px",
+  },
+  "& label": {
+    color: "#fff",
+  },
+  "& label.Mui-focused": {
+    color: "#fff",
+    background: "#03003e",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "black",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "white",
+    },
+    "&:hover fieldset": {
+      borderColor: "#b6b2ff",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#03003e",
+    },
+  },
+});
+
+const CssButton = styled(Button)({
+  "&.MuiButton-root": {
+    background: "#b6b2ff",
+    color: "#03003e",
+    "&.MuiButton-root:hover": {
+      background: "#03003e",
+      color: "#b6b2ff",
+    },
+  },
+});
+
+const Register = ({ isAuthenticated, setIsAuthenticated, setUser }) => {
+  const navigate = useNavigate();
   // const [errors,setErrors] = useState({
   //     email:false,
   // })
@@ -97,8 +138,9 @@ const Register = ({ changeView, saveUserDetails }) => {
         if (response.status === 200) {
           const data = await response.json();
           console.log(data);
-          saveUserDetails(data);
-          changeView("home");
+          // setUser(data);
+          // setIsAuthenticated(true);
+          navigate("/");
         } else {
           resetForm();
           alert(await response.text());
@@ -108,59 +150,79 @@ const Register = ({ changeView, saveUserDetails }) => {
   };
 
   return (
-    <div className={styles.signin}>
-      <h2 className={styles.title}>Register</h2>
-      <form className={styles.bg}>
-        <TextField
-          required
-          type="email"
-          id="outlined-email"
-          label="Email"
-          variant="outlined"
-          onChange={setEmail}
-          value={userDetails.email}
-        />
-        <TextField
-          required
-          type="password"
-          id="outlined-password"
-          label="Password"
-          variant="outlined"
-          onChange={setPassword}
-          value={userDetails.password}
-        />
-        <TextField
-          required
-          type="password"
-          id="outlined-confirm-pwd"
-          label="Confirm Password"
-          variant="outlined"
-          onChange={setConfirmedPassword}
-          value={userDetails.confirmPassword}
-        />
-        <TextField
-          required
-          id="outlined-firstname"
-          label="First Name"
-          variant="outlined"
-          onChange={setFirstName}
-          value={userDetails.firstName}
-        />
-        <TextField
-          required
-          id="outlined-lastname"
-          label="Last Name"
-          variant="outlined"
-          onChange={setLastName}
-          value={userDetails.lastName}
-        />
-        <Button variant="contained" onClick={registerAccount}>
-          Register
+    <section className={styles.registerPage}>
+      <aside>
+        <img src={Image} alt="side-image" />
+      </aside>
+
+      <div className={styles.signin}>
+        <h2 className={styles.title}>Register</h2>
+        <form className={styles.bg}>
+          <CssTextField
+            required
+            type="email"
+            id="outlined-email"
+            label="Email"
+            variant="outlined"
+            onChange={setEmail}
+            value={userDetails.email}
+            InputProps={{
+              disableUnderline: true,
+            }}
+          />
+          <CssTextField
+            required
+            type="password"
+            id="outlined-password"
+            label="Password"
+            variant="outlined"
+            onChange={setPassword}
+            value={userDetails.password}
+          />
+          <CssTextField
+            required
+            type="password"
+            id="outlined-confirm-pwd"
+            label="Confirm Password"
+            variant="outlined"
+            onChange={setConfirmedPassword}
+            value={userDetails.confirmPassword}
+          />
+          <CssTextField
+            required
+            id="outlined-firstname"
+            label="First Name"
+            variant="outlined"
+            onChange={setFirstName}
+            value={userDetails.firstName}
+          />
+          <CssTextField
+            required
+            id="outlined-lastname"
+            label="Last Name"
+            variant="outlined"
+            onChange={setLastName}
+            value={userDetails.lastName}
+          />
+          <CssButton variant="contained" onClick={registerAccount}>
+            Register
+          </CssButton>
+        </form>
+        <p>or</p>
+        {/* <Button onClick={() => changeView("signin")}>Sign In</Button> */}
+        <Button>
+          <Link
+            to={"/"}
+            style={{
+              textDecoration: "none",
+              padding: "0.5rem",
+            }}
+          >
+            Sign In
+          </Link>
         </Button>
-      </form>
-      <p>or</p>
-      <Button onClick={() => changeView("signin")}>Sign In</Button>
-    </div>
+      </div>
+    </section>
   );
 };
 

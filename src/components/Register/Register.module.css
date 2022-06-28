@@ -1,22 +1,67 @@
-.signin{
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height:70vh;
+.registerPage {
+  display: flex;
+  color: #fff;
 }
 
-.bg{
-   display:flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
+.registerPage > aside {
+  flex-basis: 60%;
+  display: grid;
+  place-items: center;
 }
 
-.title{
-    text-align: center;
+.registerPage > aside img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-.bg > div{
-    margin-bottom:1rem;
+.signin {
+  flex-basis: 40%;
+  background: #6c63ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.color {
+  color: #03003e;
+}
+
+.bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.25rem;
+  /* color: black; */
+}
+
+.bg > div {
+  margin-bottom: 1rem;
+}
+
+.signin input,
+.signin label {
+  color: #fff;
+}
+
+.signin input {
+  border-width: 2px;
+}
+
+.signin a {
+  color: #03003e;
+}
+
+.signin a:hover {
+  background: #03003e;
+  color: #b6b2ff;
+  border-radius: 0.25rem;
+  /* padding: 0.5rem; */
 }

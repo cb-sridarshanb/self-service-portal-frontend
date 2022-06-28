@@ -1,22 +1,76 @@
-.signin{
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height:50vh;
+.signinPage {
+  display: flex;
+  color: #fff;
 }
 
-.bg{
-   display:flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
+.signinPage > aside {
+  flex-basis: 60%;
+  display: grid;
+  place-items: center;
 }
 
-.title{
-    text-align: center;
+.signinPage > aside img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-.bg > div{
-    margin-bottom:1rem;
+.signin {
+  flex-basis: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  background: #6c63ff;
+}
+
+.bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.25rem;
+  letter-spacing: 2px;
+}
+
+.bg > div {
+  margin-bottom: 1rem;
+}
+
+/* .textField {
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+.textField:hover {
+  border: 2px solid #fff;
+}
+
+.textField:focus {
+  border: 2px solid #b6b2ff;
+} */
+
+.signin input,
+.signin label {
+  color: #fff;
+}
+
+.signin input {
+  border-width: 2px;
+}
+
+.signin a {
+  color: #03003e;
+}
+
+.signin a:hover {
+  background: #03003e;
+  color: #b6b2ff;
+  border-radius: 0.25rem;
+  /* padding: 0.5rem; */
 }

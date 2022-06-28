@@ -1,38 +1,112 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
 import Home from "./components/Home/Home";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [userDetails, setUserDetails] = useState(null);
-  const [showView, setShowView] = useState("signin");
+  const [user, setUser] = useState(() => {
+    if (sessionStorage.getItem("user-details")) {
+      return JSON.parse(sessionStorage.getItem("user-details")).user;
+    } else {
+      return null;
+    }
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (sessionStorage.getItem("user-authenticated")) {
+      return JSON.parse(sessionStorage.getItem("user-authenticated"))
+        .isAuthenticated;
+    } else {
+      return false;
+    }
+  });
+  const [userToken, setUserToken] = useState(() => {
+    if (sessionStorage.getItem("user-token")) {
+      return JSON.parse(sessionStorage.getItem("user-token")).jwtToken;
+    } else {
+      return {};
+    }
+  });
 
-  const changeView = (route) => {
-    console.log("Executing change View");
-    setShowView(route);
+  // useEffect(() => {
+  //   console.log("executing session storage for first time when app loads");
+  //   if (sessionStorage.getItem("user-authenticated")) {
+  //     const value = JSON.parse(sessionStorage.getItem("user-authenticated"));
+  //     console.log(value.isAuthenticated);
+  //     setIsAuthenticated(value.isAuthenticated);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    console.log("When state changes for authentication");
+    console.log(isAuthenticated);
+    updateAuthenticatedDetails();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    console.log("When state changes for user");
+    console.log(user);
+    updateUserDetails();
+  }, [user]);
+
+  const updateAuthenticatedDetails = () => {
+    sessionStorage.setItem(
+      "user-authenticated",
+      JSON.stringify({ isAuthenticated })
+    );
   };
 
-  const saveUserDetails = (userDetails) => {
-    console.log("Executing save user details");
-    setUserDetails(Object.assign({}, userDetails));
+  const updateUserDetails = () => {
+    sessionStorage.setItem("user-details", JSON.stringify({ user }));
   };
-
-  console.log("Executing app component");
 
   return (
     <div className="App">
-      <header>
-        <h1>Self Service Portal</h1>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? (
+                <Home
+                  user={user}
+                  setUser={setUser}
+                  isAuthenticated={isAuthenticated}
+                  setIsAuthenticated={setIsAuthenticated}
+                  userToken={userToken}
+                />
+              ) : (
+                <SignIn
+                  isAuthenticated={isAuthenticated}
+                  setIsAuthenticated={setIsAuthenticated}
+                  user={user}
+                  setUser={setUser}
+                  setUserToken={setUserToken}
+                />
+              )
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Register
+                isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
+                setUser={setUser}
+              />
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+      {/* 
       {showView === "signin" ? (
-        <SignIn changeView={changeView} saveUserDetails={saveUserDetails} />
+        <SignIn changeView={changeView} saveuser={saveuser} />
       ) : showView === "register" ? (
-        <Register changeView={changeView} saveUserDetails={saveUserDetails} />
+        <Register changeView={changeView} saveuser={saveuser} />
       ) : showView === "home" ? (
-        <Home userDetails={userDetails} changeView={changeView} />
-      ) : null}
+        <Home user={user} changeView={changeView} />
+      ) : null} */}
     </div>
   );
 }
